@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PIM - Employee List</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 24px; color: #222; }
+  button { padding: 6px 14px; margin-right: 6px; cursor: pointer; }
+  .primary { background: #ff7b1d; color: #fff; border: 0; border-radius: 16px; }
+  table { border-collapse: collapse; margin-top: 12px; min-width: 360px; }
+  th, td { border: 1px solid #ddd; padding: 6px 10px; text-align: left; }
+  #addForm { display: none; border: 1px solid #ddd; padding: 12px; margin: 12px 0; max-width: 360px; }
+  #addForm label { display: block; margin-top: 8px; }
+  .error { color: #b00020; font-size: 13px; }
+  .toast { color: #1b7a3a; margin-top: 10px; }
+</style>
+</head>
+<body>
+  <h1>Employee List</h1>
+
+  <form id="searchForm">
+    <label for="searchName">Employee Name</label>
+    <input id="searchName" name="searchName">
+    <button type="submit">Search</button>
+  </form>
+
+  <p><button id="addEmployee" class="primary" type="button">Add Employee</button></p>
+
+  <form id="addForm" novalidate>
+    <h2>Add Employee</h2>
+    <label for="firstName">First Name</label>
+    <input id="firstName" name="firstName">
+    <label for="lastName">Last Name</label>
+    <input id="lastName" name="lastName">
+    <p id="formError" class="error" role="alert"></p>
+    <button id="save" type="submit" class="primary">Save</button>
+    <button id="cancel" type="button">Cancel</button>
+  </form>
+
+  <p id="toast" class="toast" role="status"></p>
+
+  <table>
+    <thead><tr><th>First Name</th><th>Last Name</th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <p id="records">Records found: <span id="count">0</span></p>
+
+<script>
+  // Everything stays in this page. Nothing is sent anywhere, and a reload starts fresh.
+  var people = [["Linda", "Anderson"], ["Peter", "Mac Anderson"], ["Odis", "Adalwin"]];
+  var shown = people;
+  var $ = function (id) { return document.getElementById(id); };
+
+  function render() {
+    $("rows").innerHTML = shown.map(function (p) {
+      return "<tr><td>" + p[0] + "</td><td>" + p[1] + "</td></tr>";
+    }).join("");
+    $("count").textContent = shown.length;
+  }
+
+  $("addEmployee").onclick = function () {
+    $("addForm").style.display = "block";
+    $("toast").textContent = "";
+    $("firstName").focus();
+  };
+
+  $("cancel").onclick = function () {
+    $("addForm").reset();
+    $("formError").textContent = "";
+    $("addForm").style.display = "none";
+  };
+
+  $("addForm").onsubmit = function (e) {
+    e.preventDefault();
+    var first = $("firstName").value.trim(), last = $("lastName").value.trim();
+    if (!first || !last) { $("formError").textContent = "Required"; return; }
+    people = people.concat([[first, last]]);
+    shown = people;
+    $("addForm").reset();
+    $("formError").textContent = "";
+    $("addForm").style.display = "none";
+    $("toast").textContent = "Successfully Saved";
+    render();
+  };
+
+  $("searchForm").onsubmit = function (e) {
+    e.preventDefault();
+    var q = $("searchName").value.trim().toLowerCase();
+    shown = !q ? people : people.filter(function (p) {
+      return (p[0] + " " + p[1]).toLowerCase().indexOf(q) >= 0;
+    });
+    render();
+  };
+
+  render();
+</script>
+</body>
+</html>
