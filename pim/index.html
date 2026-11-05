@@ -74,7 +74,7 @@
   $("addForm").onsubmit = function (e) {
     e.preventDefault();
     var first = $("firstName").value.trim(), last = $("lastName").value.trim();
-    if (!last) { $("formError").textContent = "Required"; return; }
+        if (!first || !last) { $("formError").textContent = "Required"; return; } { $("formError").textContent = "Required"; return; }
     people = people.concat([[first, last]]);
     shown = people;
     $("addForm").reset();
